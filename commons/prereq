@@ -1,0 +1,20 @@
+# Replace with your actual project ID
+PROJECT_ID="your-gcp-project-id"
+
+# Set Cloud Shell's active project
+gcloud config set project $PROJECT_ID
+
+# Create a new service account named "tf-root-user"
+# This account will be used by Terraform to manage resources
+gcloud iam service-accounts create tf-root-user \
+  --display-name "Terraform Root User"
+
+# Grant Network Admin role so it can create/delete VPCs, subnets, routes
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member "serviceAccount:tf-root-user@$PROJECT_ID.iam.gserviceaccount.com" \
+  --role "roles/compute.networkAdmin"
+
+# Grant Security Admin role so it can create/delete firewall rules
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member "serviceAccount:tf-root-user@$PROJECT_ID.iam.gserviceaccount.com" \
+  --role "roles/compute.securityAdmin"
